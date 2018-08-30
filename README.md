@@ -1,0 +1,1 @@
+Super simiple minesweeper
