@@ -73,74 +73,37 @@ function mineSweeper() {
              // if up, right-up, right, right-down, down, down-left, left, left-up does not contain mine, we need to repeat 
         var sum = 0;
         // console.log('x', x, 'y', y)
-        if (MineSweeper.mines[x + 1] !== undefined) {
-            if (MineSweeper.mines[x + 1][y + 1]) {
-                sum++;
-            } 
-            if (MineSweeper.mines[x + 1][y]) {
-                sum++;
+        for (var i = x - 1; i <= x + 1; i++) {
+            if (MineSweeper.mines[i] === undefined) {
+                continue;
+            } else if (i === x && j === y) {
+                continue;
             }
-            if (MineSweeper.mines[x + 1][y - 1]) {
-                sum++;
-            } 
-        }
-        if (MineSweeper.mines[x - 1]) {
-            if (MineSweeper.mines[x - 1][y]) {
-                sum++;
-            } 
-            if (MineSweeper.mines[x - 1][y + 1]) {
-                sum++;
-            }
-            if (MineSweeper.mines[x - 1][y - 1]) {
-                sum++;
-            } 
-        }
-       
-        if (MineSweeper.mines[x][y + 1]) {
-            sum++;
-        } 
-     
-        if (MineSweeper.mines[x][y - 1]) {
-            sum++;
-        } 
 
-        MineSweeper.userBoard[x][y] = sum;
+            for (var j = y - 1; j <= y + 1; j++) {
+                if (MineSweeper.mines[i][j]) {
+                    sum++;
+                }
+            }
+        }
 
         if (sum === 0) {
-            if (MineSweeper.mines[x + 1] !== undefined ) {
-                if (MineSweeper.mines[x + 1][y + 1] === false && MineSweeper.userBoard[x + 1][ y + 1] === "") {
-                    MineSweeper.countMines(x + 1, y + 1)
+            for (var i = x - 1; i <= x + 1; i++) {
+                if (MineSweeper.mines[i] === undefined) {
+                    continue;
+                } else if (i === x && j === y) {
+                    continue;
                 }
-                if (MineSweeper.mines[x + 1][y] === false && MineSweeper.userBoard[x + 1][ y] === "") {
-                    MineSweeper.countMines(x + 1, y)
-                }
-                if (MineSweeper.mines[x + 1][y - 1] === false && MineSweeper.userBoard[x + 1][ y - 1] === "") {
-                    MineSweeper.countMines(x + 1, y - 1)
-                }
-            }
-            if (MineSweeper.mines[x - 1]) {
-                if (MineSweeper.mines[x- 1][y] === false && MineSweeper.userBoard[x - 1][y] === "") {
-                    MineSweeper.countMines(x-1, y)
-                }
-                if (MineSweeper.mines[x- 1][y + 1] === false && MineSweeper.userBoard[x - 1][y + 1] === "") {
-                    MineSweeper.countMines(x-1, y + 1)
-                }
-                if (MineSweeper.mines[x - 1][y - 1] === false && MineSweeper.userBoard[x - 1][ y - 1] === "") {
-                    MineSweeper.countMines(x - 1, y - 1)
-                }
-            }
-            if (MineSweeper.mines[x] !== undefined) {
-                if (MineSweeper.mines[x][y + 1] === false && MineSweeper.userBoard[x][ y + 1] === "") {
-                    MineSweeper.countMines(x, y + 1)
-                }
-            
-                if (MineSweeper.mines[x][y - 1] === false && MineSweeper.userBoard[x][ y - 1] === "") {
-                    MineSweeper.countMines(x, y - 1)
+
+                for (var j = y - 1; j <= y + 1; j++) {
+                    if (!MineSweeper.mines[i][j] && MineSweeper.userBoard[i][j] === "") {
+                        MineSweeper.countMines(i, j);
+                    }
                 }
             }
         }
-    
 
+        MineSweeper.userBoard[x][y] = sum;
     }
 
 
