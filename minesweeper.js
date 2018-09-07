@@ -1,10 +1,10 @@
 
-function mineSweeper() {
+function mineSweeper(x, y, numOfMines) {
     var MineSweeper = {};
     MineSweeper.mines = [];
     MineSweeper.userBoard = [];
 
-    MineSweeper.generateUserBoard = function(x,y) {
+    MineSweeper.generateUserBoard = function (x, y) {
         for (var i = 0; i < y; i++) {
             MineSweeper.userBoard.push([]);
             for (var j = 0; j < x; j++) {
@@ -12,14 +12,14 @@ function mineSweeper() {
             }
         }
     }
-    
-    MineSweeper.generateMineBoard = function(x, y, numOfMines) {
-        mineSpots = MineSweeper.determineMineSpots(x*y, numOfMines);
+
+    MineSweeper.generateMineBoard = function (x, y, numOfMines) {
+        mineSpots = MineSweeper.determineMineSpots(x * y, numOfMines);
 
         var currentSpot = 0;
         for (var i = 0; i < y; i++) {
             MineSweeper.mines.push([]);
-            for (var j = 0; j < x; j++ ) {
+            for (var j = 0; j < x; j++) {
                 if (mineSpots.includes(currentSpot)) {
                     MineSweeper.mines[i].push(true);
                 } else {
@@ -30,129 +30,81 @@ function mineSweeper() {
         }
     }
 
-    MineSweeper.determineMineSpots = function(totalSpots, numOfMines) {
+    MineSweeper.determineMineSpots = function (totalSpots, numOfMines) {
         var mineSpots = []
         for (var i = 0; i < numOfMines; i++) {
             var randomMine;
             do {
-                randomMine = Math.floor(Math.random() * totalSpots);  
+                randomMine = Math.floor(Math.random() * totalSpots);
             }
-            while (mineSpots.includes(randomMine)) 
+            while (mineSpots.includes(randomMine))
             mineSpots.push(randomMine);
         }
         return mineSpots
     }
 
-    MineSweeper.flag = function(x,y) {
+    MineSweeper.flag = function (x, y) {
         // if x,y in MineSweeper Userboard is flag
-        if (MineSweeper.userBoard[x][y] === "f")  {
-            MineSweeper.userBoard[x][y] = undefined;
+        if (MineSweeper.userBoard[y][x] === "f") {
+            MineSweeper.userBoard[y][x] = undefined;
         } else {
-            MineSweeper.userBoard[x][y] = "f"
+            MineSweeper.userBoard[y][x] = "f"
         }
     }
 
-    MineSweeper.reveal = function(x,y) {
+    MineSweeper.reveal = function (x, y) {
         //if x, y in MineSweeper Mines is a mine
-        if (MineSweeper.mines[x][y]) {
+        if (MineSweeper.mines[y][x]) {
             //todo handle lose
             console.log('game over');
         } else {
-            MineSweeper.countMines(x,y)
+            MineSweeper.countMines(x, y)
         }
 
-            // show mines game over
+        // show mines game over
 
         // else countMines
     }
 
-    MineSweeper.countMines = function(x, y)  {
-        // determine how many mines border         
-             // check up, right-up, right, right-down, down, down-left, left, left-up
-             // leave sum at x y in UserBoard
-             // if up, right-up, right, right-down, down, down-left, left, left-up does not contain mine, we need to repeat 
-        var sum = 0;
-        // console.log('x', x, 'y', y)
-        if (MineSweeper.mines[x + 1] !== undefined) {
-            if (MineSweeper.mines[x + 1][y + 1]) {
-                sum++;
-            } 
-            if (MineSweeper.mines[x + 1][y]) {
-                sum++;
+    MineSweeper.forEachAdjustent = function (x, y, matrix, callback) {
+        var check = [[y, x + 1], [y, x - 1], [y + 1, x], [y + 1, x - 1], [y + 1, x + 1], [y - 1, x], [y - 1, x - 1], [y - 1, x + 1]];
+        for (var i = 0; i < check.length; i++) {
+            const yy = check[i][0];
+            const xx = check[i][1];
+            if (matrix[yy] !== undefined) {
+                callback(matrix[yy][xx], xx, yy);
             }
-            if (MineSweeper.mines[x + 1][y - 1]) {
-                sum++;
-            } 
         }
-        if (MineSweeper.mines[x - 1]) {
-            if (MineSweeper.mines[x - 1][y]) {
-                sum++;
-            } 
-            if (MineSweeper.mines[x - 1][y + 1]) {
-                sum++;
-            }
-            if (MineSweeper.mines[x - 1][y - 1]) {
-                sum++;
-            } 
-        }
-       
-        if (MineSweeper.mines[x][y + 1]) {
-            sum++;
-        } 
-     
-        if (MineSweeper.mines[x][y - 1]) {
-            sum++;
-        } 
+    }
 
-        MineSweeper.userBoard[x][y] = sum;
+    MineSweeper.countMines = function (x, y) {
+        // determine how many mines border         
+        // check up, right-up, right, right-down, down, down-left, left, left-up
+        // leave sum at x y in UserBoard
+        // if up, right-up, right, right-down, down, down-left, left, left-up does not contain mine, we need to repeat 
+        var sum = 0;
+        MineSweeper.forEachAdjustent(x, y, MineSweeper.mines, (val) => {
+            if (val) {
+                sum++;
+            }
+        });
+
+        MineSweeper.userBoard[y][x] = sum;
 
         if (sum === 0) {
-            if (MineSweeper.mines[x + 1] !== undefined ) {
-                if (MineSweeper.mines[x + 1][y + 1] === false && MineSweeper.userBoard[x + 1][ y + 1] === "") {
-                    MineSweeper.countMines(x + 1, y + 1)
+            MineSweeper.forEachAdjustent(x, y, MineSweeper.mines, (val, xx, yy) => {
+                if (val === false && MineSweeper.userBoard[yy][xx] === "") {
+                    MineSweeper.countMines(xx, yy)
                 }
-                if (MineSweeper.mines[x + 1][y] === false && MineSweeper.userBoard[x + 1][ y] === "") {
-                    MineSweeper.countMines(x + 1, y)
-                }
-                if (MineSweeper.mines[x + 1][y - 1] === false && MineSweeper.userBoard[x + 1][ y - 1] === "") {
-                    MineSweeper.countMines(x + 1, y - 1)
-                }
-            }
-            if (MineSweeper.mines[x - 1]) {
-                if (MineSweeper.mines[x- 1][y] === false && MineSweeper.userBoard[x - 1][y] === "") {
-                    MineSweeper.countMines(x-1, y)
-                }
-                if (MineSweeper.mines[x- 1][y + 1] === false && MineSweeper.userBoard[x - 1][y + 1] === "") {
-                    MineSweeper.countMines(x-1, y + 1)
-                }
-                if (MineSweeper.mines[x - 1][y - 1] === false && MineSweeper.userBoard[x - 1][ y - 1] === "") {
-                    MineSweeper.countMines(x - 1, y - 1)
-                }
-            }
-            if (MineSweeper.mines[x] !== undefined) {
-                if (MineSweeper.mines[x][y + 1] === false && MineSweeper.userBoard[x][ y + 1] === "") {
-                    MineSweeper.countMines(x, y + 1)
-                }
-            
-                if (MineSweeper.mines[x][y - 1] === false && MineSweeper.userBoard[x][ y - 1] === "") {
-                    MineSweeper.countMines(x, y - 1)
-                }
-            }
+            });
         }
-    
-
     }
 
 
-    MineSweeper.generateMineBoard(20, 20, 90) 
-    MineSweeper.generateUserBoard(20, 20)
+    MineSweeper.generateMineBoard(x, y, numOfMines)
+    MineSweeper.generateUserBoard(x, y)
 
 
     // console.log('mineSpots' ,determineMineSpots(100, 20))
     return MineSweeper
 }
-
-var MineSweeper = mineSweeper()
-console.log(MineSweeper.mines);
-MineSweeper.reveal(3, 0)
-console.log(MineSweeper.userBoard);

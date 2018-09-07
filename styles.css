@@ -1,0 +1,14 @@
+.board{
+    display: flex; 
+    flex-direction: column;
+}
+.row{
+    display: flex; 
+    flex-direction: row;
+}
+.square {
+    margin: 2px;
+    width: 25px;
+    height: 25px;
+    background-color: grey;
+}
