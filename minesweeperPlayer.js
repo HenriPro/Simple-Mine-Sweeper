@@ -50,6 +50,12 @@ mineSweeperPlayer = (x,y, numOfMines) => {
                 $square.innerHTML= board[i][j]  
             }
         }
+        if (MineSweeperPlayer.Minesweeper.playing === false) { 
+            var $board = document.body.getElementsByClassName('board')[0];
+            var $lost = document.createElement("h1");
+            $lost.innerHTML = 'GAME OVER';
+            $board.appendChild($lost);
+        }
     }
 
     MineSweeperPlayer.startGame(x,y, numOfMines);

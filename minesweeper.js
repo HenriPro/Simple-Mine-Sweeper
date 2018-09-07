@@ -3,6 +3,7 @@ function mineSweeper(x, y, numOfMines) {
     var MineSweeper = {};
     MineSweeper.mines = [];
     MineSweeper.userBoard = [];
+    MineSweeper.playing = true;
 
     MineSweeper.generateUserBoard = function (x, y) {
         for (var i = 0; i < y; i++) {
@@ -57,6 +58,7 @@ function mineSweeper(x, y, numOfMines) {
         if (MineSweeper.mines[y][x]) {
             //todo handle lose
             console.log('game over');
+            MineSweeper.playing = false;
         } else {
             MineSweeper.countMines(x, y)
         }
@@ -68,13 +70,13 @@ function mineSweeper(x, y, numOfMines) {
 
     MineSweeper.forEachAdjustent = function (x, y, matrix, callback) {
         var check = [[y, x + 1], [y, x - 1], [y + 1, x], [y + 1, x - 1], [y + 1, x + 1], [y - 1, x], [y - 1, x - 1], [y - 1, x + 1]];
-        for (var i = 0; i < check.length; i++) {
-            const yy = check[i][0];
-            const xx = check[i][1];
+        check.forEach(tuple=> {
+            const yy = tuple[0];
+            const xx = tuple[1];
             if (matrix[yy] !== undefined) {
                 callback(matrix[yy][xx], xx, yy);
             }
-        }
+        });
     }
 
     MineSweeper.countMines = function (x, y) {
